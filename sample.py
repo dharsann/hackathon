@@ -2,6 +2,7 @@ from sys import maxsize
 from itertools import permutations
 V = 4
 
+path=[]
 def travellingSalesmanProblem(graph, s):
 	vertex = []
 	for i in range(V):
@@ -17,9 +18,14 @@ def travellingSalesmanProblem(graph, s):
 			current_pathweight += graph[k][j]
 			k = j
 		current_pathweight += graph[k][s]
-		min_path = min(min_path, current_pathweight)
-
-	return min_path
+		"""min_path = min(min_path, current_pathweight)
+	return min_path"""
+		if current_pathweight<min_path:
+			min_path=current_pathweight
+			min_path_vertex=[s]+list(i)+[s]
+	node_labels=[f"n{i}" for i in min_path_vertex]
+	output={"v0":{"path":["r0"]+node_labels+["r0"]}}
+	return output
 
 if __name__ == "__main__":
 	graph = [
