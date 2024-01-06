@@ -1,6 +1,28 @@
-import itertools
+from sys import maxsize
+from itertools import permutations
+V = 4
 
-adjacency_matrix=[
+def travellingSalesmanProblem(graph, s):
+	vertex = []
+	for i in range(V):
+		if i != s:
+			vertex.append(i)
+
+	min_path = maxsize
+	next_permutation=permutations(vertex)
+	for i in next_permutation:
+		current_pathweight = 0
+		k = s
+		for j in i:
+			current_pathweight += graph[k][j]
+			k = j
+		current_pathweight += graph[k][s]
+		min_path = min(min_path, current_pathweight)
+
+	return min_path
+
+if __name__ == "__main__":
+	graph = [
     [0, 3366, 2290, 3118, 1345, 854, 1176, 1291, 1707, 2160, 1606, 702, 1820, 1985, 1838, 1515, 3370, 1643, 2874, 1418, 2495],
     [3366, 0, 1076, 512, 2021, 2512, 2190, 2075, 1923, 1206, 1760, 2664, 1546, 1645, 1528, 1851, 376, 1723, 492, 1948, 1135],
     [2290, 1076, 0, 1494, 945, 1436, 1114, 999, 2905, 536, 684, 1588, 876, 2627, 452, 775, 1358, 647, 716, 872, 2117],
@@ -23,32 +45,5 @@ adjacency_matrix=[
     [1418, 1948, 872, 1700, 763, 682, 360, 127, 3111, 742, 790, 1550, 1082, 2833, 558, 881, 1952, 465, 1456, 0, 2323],
     [2495, 1135, 2117, 623, 1560, 1641, 1963, 2210, 788, 1581, 1533, 1793, 1241, 510, 1765, 1442, 875, 1858, 1401, 2323, 0]
 ]
-def calculate_cost(path, adj_matrix):
-    cost = 0
-    for i in range(len(path) - 1):
-        cost += adj_matrix[path[i]][path[i + 1]]
-    cost += adj_matrix[path[-1]][path[0]] 
-    return cost
-
-def tsp_brute_force(adj_matrix):
-    num_nodes = len(adj_matrix)
-    nodes = list(range(num_nodes))
-    min_cost = float('inf')
-    min_path = None
-
-    for path in itertools.permutations(nodes):
-        cost = calculate_cost(path, adj_matrix)
-        if cost < min_cost:
-            min_cost = cost
-            min_path = path
-
-    return min_cost, min_path
-
-optimal_cost, optimal_path = tsp_brute_force(adjacency_matrix)
-
-formatted_optimal_path = ['r0'] + [f'n{node}' for node in optimal_path] + ['r0']
-output = {'v0': {'path': formatted_optimal_path, 'cost': optimal_cost}}
-
-print(output)
-
-    
+	s = 0
+	print(travellingSalesmanProblem(graph, s))
