@@ -1,46 +1,54 @@
-import json
-import networkx as nx
+import itertools
 
-# Load the JSON data from the file
-with open(r'Z:\Hackathon\Input data\level0.json', 'r') as json_file:
-    data = json.load(json_file)
+adjacency_matrix=[
+    [0, 3366, 2290, 3118, 1345, 854, 1176, 1291, 1707, 2160, 1606, 702, 1820, 1985, 1838, 1515, 3370, 1643, 2874, 1418, 2495],
+    [3366, 0, 1076, 512, 2021, 2512, 2190, 2075, 1923, 1206, 1760, 2664, 1546, 1645, 1528, 1851, 376, 1723, 492, 1948, 1135],
+    [2290, 1076, 0, 1494, 945, 1436, 1114, 999, 2905, 536, 684, 1588, 876, 2627, 452, 775, 1358, 647, 716, 872, 2117],
+    [3118, 512, 1494, 0, 1773, 2264, 1942, 1827, 1411, 958, 1512, 2416, 1298, 1133, 1280, 1603, 252, 1475, 778, 1700, 623],
+    [1345, 2021, 945, 1773, 0, 491, 403, 650, 2348, 815, 261, 787, 475, 2070, 493, 170, 2025, 298, 1529, 763, 1560],
+    [854, 2512, 1436, 2264, 491, 0, 322, 569, 2429, 1306, 752, 868, 966, 2151, 984, 661, 2516, 789, 2020, 682, 1641],
+    [1176, 2190, 1114, 1942, 403, 322, 0, 247, 2751, 984, 430, 1190, 722, 2473, 662, 521, 2194, 467, 1698, 360, 1963],
+    [1291, 2075, 999, 1827, 650, 569, 247, 0, 2998, 869, 677, 1437, 969, 2720, 547, 768, 2079, 352, 1583, 127, 2210],
+    [1707, 1923, 2905, 1411, 2348, 2429, 2751, 2998, 0, 2369, 2321, 1561, 2029, 278, 2553, 2230, 1663, 2646, 2189, 3111, 788],
+    [2160, 1206, 536, 958, 815, 1306, 984, 869, 2369, 0, 554, 1458, 340, 2091, 322, 645, 1210, 517, 714, 742, 1581],
+    [1606, 1760, 684, 1512, 261, 752, 430, 677, 2321, 554, 0, 904, 292, 2043, 232, 91, 1764, 325, 1268, 790, 1533],
+    [702, 2664, 1588, 2416, 787, 868, 1190, 1437, 1561, 1458, 904, 0, 1118, 1283, 1136, 813, 2668, 1085, 2172, 1550, 1793],
+    [1820, 1546, 876, 1298, 475, 966, 722, 969, 2029, 340, 292, 1118, 0, 1751, 524, 305, 1550, 617, 1054, 1082, 1241],
+    [1985, 1645, 2627, 1133, 2070, 2151, 2473, 2720, 278, 2091, 2043, 1283, 1751, 0, 2275, 1952, 1385, 2368, 1911, 2833, 510],
+    [1838, 1528, 452, 1280, 493, 984, 662, 547, 2553, 322, 232, 1136, 524, 2275, 0, 323, 1532, 195, 1036, 558, 1765],
+    [1515, 1851, 775, 1603, 170, 661, 521, 768, 2230, 645, 91, 813, 305, 1952, 323, 0, 1855, 416, 1359, 881, 1442],
+    [3370, 376, 1358, 252, 2025, 2516, 2194, 2079, 1663, 1210, 1764, 2668, 1550, 1385, 1532, 1855, 0, 1727, 642, 1952, 875],
+    [1643, 1723, 647, 1475, 298, 789, 467, 352, 2646, 517, 325, 1085, 617, 2368, 195, 416, 1727, 0, 1231, 465, 1858],
+    [2874, 492, 716, 778, 1529, 2020, 1698, 1583, 2189, 714, 1268, 2172, 1054, 1911, 1036, 1359, 642, 1231, 0, 1456, 1401],
+    [1418, 1948, 872, 1700, 763, 682, 360, 127, 3111, 742, 790, 1550, 1082, 2833, 558, 881, 1952, 465, 1456, 0, 2323],
+    [2495, 1135, 2117, 623, 1560, 1641, 1963, 2210, 788, 1581, 1533, 1793, 1241, 510, 1765, 1442, 875, 1858, 1401, 2323, 0]
+]
+def calculate_cost(path, adj_matrix):
+    cost = 0
+    for i in range(len(path) - 1):
+        cost += adj_matrix[path[i]][path[i + 1]]
+    cost += adj_matrix[path[-1]][path[0]] 
+    return cost
 
-# Extract the distances for neighborhoods and the restaurant
-neighborhood_distances = {key: value['distances'] for key, value in data['neighbourhoods'].items()}
-restaurant_distances = data['restaurants']['r0']['neighbourhood_distance']
+def tsp_brute_force(adj_matrix):
+    num_nodes = len(adj_matrix)
+    nodes = list(range(num_nodes))
+    min_cost = float('inf')
+    min_path = None
 
-# Add the restaurant distances to the neighborhood distances
-neighborhood_distances['r0'] = restaurant_distances
+    for path in itertools.permutations(nodes):
+        cost = calculate_cost(path, adj_matrix)
+        if cost < min_cost:
+            min_cost = cost
+            min_path = path
 
-# Convert the distances into an adjacency matrix
-num_neighborhoods = len(neighborhood_distances)
-adjacency_matrix = [neighborhood_distances[key] for key in sorted(neighborhood_distances.keys())]
+    return min_cost, min_path
 
-# Create a graph from the adjacency matrix
-G = nx.Graph()
-for i in range(num_neighborhoods + 1):  # Include the restaurant node
-    for j in range(num_neighborhoods + 1):  # Include the restaurant node
-        G.add_edge(i, j, weight=adjacency_matrix[i][j])
+optimal_cost, optimal_path = tsp_brute_force(adjacency_matrix)
 
-# Perform any further operations using the created graph `G`
-# For example, find the shortest path:
-shortest_path = nx.approximation.traveling_salesman_problem(G, cycle=True)
+formatted_optimal_path = ['r0'] + [f'n{node}' for node in optimal_path] + ['r0']
+output = {'v0': {'path': formatted_optimal_path, 'cost': optimal_cost}}
 
-# Print the shortest path
-print(shortest_path)
+print(output)
 
-
-G = nx.Graph()
-num_nodes = len(adjacency_matrix)
-for i in range(num_nodes):
-    for j in range(num_nodes):
-        G.add_edge(i, j, weight=adjacency_matrix[i][j])
-
-tsp_path = nx.approximation.traveling_salesman_problem(G, cycle=True)
-restaurant_index = num_nodes - 1
-while tsp_path[0] != restaurant_index:
-    tsp_path = tsp_path[1:] + tsp_path[:1]
-node_names = ['n{}'.format(i) for i in tsp_path]
-node_names = ['r0'] + node_names + ['r0']
-output = {"v0": {"path": node_names}}
-
+    

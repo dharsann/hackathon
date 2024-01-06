@@ -1,8 +1,5 @@
 import json
 
-with open(r'Z:\Hackathon\Input data\level0.json', 'r') as f:
-    graph = json.load(f)
-
 def dijkstra(graph, start, end):
     distances = {node: float('inf') for node in graph['neighbourhoods']}
     distances[start] = 0
@@ -36,19 +33,20 @@ def dijkstra(graph, start, end):
 
     return path
 
-def find_shortest_path(graph, restaurant, start, end):
+def find_shortest_path(graph, start, end):
     shortest_path = dijkstra(graph, start, end)
     return shortest_path
 
-restaurant = 'r0'  
+with open(r'Z:\Hackathon\Input data\level0.json', 'r') as f:
+    graph = json.load(f)
+restaurant = 'r0'
 start_node = 'n0'
-end_node = 'n9'
+end_node = 'n19'
 
-shortest_path = find_shortest_path(graph, restaurant, start_node, end_node)
-
-output = {"v0": {"path": ['r0']+shortest_path+['r0']}}
+shortest_path = find_shortest_path(graph, start_node, end_node)
+output = {"v0": {"path": ['r0'] + shortest_path + ['r0']}}
 
 with open(r"Z:\Hackathon\level0out.json", 'w') as outfile:
     json.dump(output, outfile)
 
-print(json.dumps(output))
+print(output)
