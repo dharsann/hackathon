@@ -1,5 +1,5 @@
 import json
-
+import numpy as np
 with open(r'Z:\Hackathon\Input data\level0.json') as file:
     data = json.load(file)
 
